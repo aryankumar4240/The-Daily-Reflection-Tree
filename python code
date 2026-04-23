@@ -1,0 +1,83 @@
+import csv
+import sys
+from collections import defaultdict
+import pandas as pd
+import re  # For interpolation
+
+# Load tree TSV
+df = pd.read_csv('../reflection-tree.tsv', sep='\t')  # Parent dir if in agent/
+tree = {row['id']: row.to_dict() for _, row in df.iterrows()}
+
+state = {'signals': defaultdict(int), 'answers': {}}
+
+def interpolate_text(text, answers):
+    for node, ans in answers.items():
+        text = re.sub(rf'{{ *{node} *\.answer *}}', ans, text)
+    # Simple dominant logic
+    if state['signals']['axis1internal'] > state['signals']['axis1external']:
+        text = re.sub(r'\{axis1\.dominant\}', 'internal', text)
+    else:
+        text = re.sub(r'\{axis1\.dominant\}', 'external', text)
+    # Add more axes
+    text = re.sub(r'\{axis2\.dominant\}', 'contribution' if state['signals']['axis2contribution'] > state['signals']['axis2entitlement'] else 'entitlement', text)
+    return text
+
+def run_tree():
+    current = 'START'
+    print("=== Daily Reflection Tree (DT Assignment) ===\n")
+    print("No AI/LLM - Pure deterministic paths!\n")
+    
+    while current != 'END':
+        node = tree[current]
+        ntype = node['type']
+        
+        if ntype in ['start', 'bridge', 'end']:
+            print(node['text'])
+            input("\nPress Enter...")
+            
+        elif ntype == 'question':
+            print(node['text'])
+            opts = node['options'].split('|')
+            for i, opt in enumerate(opts, 1):
+                print(f"{i}. {opt}")
+            while True:
+                try:
+                    choice = int(input("\nChoose number: ")) - 1
+                    ans = opts[choice]
+                    state['answers'][current] = ans
+                    if node['signal']:
+                        state['signals'][node['signal']] += 1
+                    print(f"\nSelected: {ans}\n")
+                    break
+                except:
+                    print("Invalid—try 1-{len(opts)}")
+            
+        elif ntype == 'reflection' or ntype == 'summary':
+            text = interpolate_text(node['text'], state['answers'])
+            print(text)
+            input("\nPress Enter...")
+            
+        elif ntype == 'decision':
+            parent = node['parentId']
+            prev_ans = state['answers'][parent]
+            opts_col = node['options']
+            for rule in opts_col.split('|'):
+                if rule.startswith(f"answer{prev_ans}"):
+                    current = rule.split(rule.rfind('A')-1)[-1]  # Extract target
+                    break
+            continue  # Skip input
+            
+        # Next node (child or target)
+        children = [k for k,v in tree.items() if v['parentId'] == current]
+        if children:
+            current = children[0]
+        elif 'target' in node and pd.notna(node['target']):
+            current = node['target']
+        else:
+            current = 'END'
+    
+    print("\n--- Session End ---")
+    print("Signals:", dict(state['signals']))
+
+if __name__ == "__main__":
+    run_tree()

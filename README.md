@@ -1,2 +1,10 @@
-# The-Daily-Reflection-Tree
-A structured, deterministic reflection tool that uses a decision tree to guide users through daily reflection across multiple psychological axes.
+# DT Daily Reflection Tree Assignment
+
+- **Part A**: `reflection-tree.tsv` (30 nodes), `tree-diagram.md`, `write-up.md`.
+- **Part B**: `agent/main.py` (TSV loader, CLI runner).
+
+**Run**: `pip install pandas; python agent/main.py`
+
+**Transcripts**:
+- Victor path: internal/contribution/outward → "Build strengths."
+- Victim path: external/entitlement/self → "Notice patterns."

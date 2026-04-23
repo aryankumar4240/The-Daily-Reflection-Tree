@@ -1,0 +1,27 @@
+id	parentId	type	text	options	target	signal
+START		start	Good evening. Take 2 minutes to reflect on your day. No right/wrong—just honesty.				
+A1OPEN	START	question	How was today overall?	Productive|Tough|Mixed|Overwhelming|Smooth	A1D1	
+A1D1	A1OPEN	decision	answerProductiveSmoothA1QHIGH|answerToughOverwhelmingMixedA1QLOW		
+A1QHIGH	A1D1	question	You said '{A1OPEN.answer}'. In a good moment today, what role did you play?	I prepared/planned it|I adapted quickly|Team made it easy|Luck/timing helped|Others led it	A1RINT	axis1internal
+A1QLOW	A1D1	question	You said '{A1OPEN.answer}'. When challenged, your first thought?	What can I control/change?|Why me/us?|Wait for help/fix?|Push harder anyway?|Give up temporarily	A1REXT	axis1external
+A1RINT	A1QHIGH	reflection	You notice your role in positives—preparation, adaptation. That's internal agency at work.		axis1internal
+A1REXT	A1QLOW	reflection	Challenges highlight external factors. Valid, but where was one choice you made? Reflect on that.		axis1external
+BRIDGE12	A1RINT	bridge	Agency seen. Now, shift to what you gave vs. expected today.	A2OPEN	
+BRIDGE12B	A1REXT	bridge	External pulls focus out. Now, what did you contribute amid it?	A2OPEN	
+A2OPEN	BRIDGE12	question	One interaction today: your mindset?	Helped without being asked|Taught/shared knowledge|Needed recognition first|Frustrated by others' effort|Did minimum expected	A2D1	
+A2D1	A2OPEN	decision	answerHelpedTaughtA2QCONTRIB|answerNeededFrustratedMinimumA2QENTITLE		
+A2QCONTRIB	A2D1	question	'{A2OPEN.answer}' shows giving. Another example?	Extra effort on task|Supported colleague|Improved process|Followed routine|Expected reward	A2RCONTRIB	axis2contribution
+A2QENTITLE	A2D1	question	'{A2OPEN.answer}'. What held back more giving?	My own limits|Others not reciprocating|No recognition|Too much on plate|Not my role	A2RENT	axis2entitlement
+A2RCONTRIB	A2QCONTRIB	reflection	Giving beyond duty builds quiet strength. You leaned contribution today.		axis2contribution
+A2RENT	A2QENTITLE	reflection	Entitlement hides in 'fairness'. Small acts shift it—what's one tomorrow?		axis2entitlement
+BRIDGE23	A2RCONTRIB	bridge	Contribution widens view. Now, whose day included yours?	A3OPEN	
+BRIDGE23B	A2RENT	bridge	Fairness noted. Now, frame it beyond self?	A3OPEN	
+A3OPEN	BRIDGE23	question	Today's challenge: perspective?	Just mine to solve|Team affected too|Colleague struggled more|Customer/end-user impacted|Organization's ripple	A3D1	
+A3D1	A3OPEN	decision	answerJustMineA3QSELF|answerTeamColleagueCustomerOrganizationA3QOTHER		
+A3QSELF	A3D1	question	'{A3OPEN.answer}'. How did it feel self-focused?	Overwhelmed alone|Isolated|Urgent for me|Personal setback|Missed opportunity	A3RSELF	axis3self
+A3QOTHER	A3D1	question	'{A3OPEN.answer}'. How did it connect outward?	Helped team progress|Supported peer|Improved for users|Advanced bigger goal|Isolated impact	A3ROTHER	axis3altro
+A3RSELF	A3QSELF	reflection	Self-frame is natural under stress. Widening it eases burden.		axis3self
+A3ROTHER	A3QOTHER	reflection	Outward view reveals meaning. Your actions touched more than you see.		axis3altro
+SUMMARY1	A3RSELF	summary	Today: {axis1.dominant} on agency, {axis2.dominant} orientation, self-radius lean. Notice patterns for growth.	END	
+SUMMARY2	A3ROTHER	summary	Today: {axis1.dominant} agency, {axis2.dominant} contribution/entitlement, outward radius. Build on strengths.	END	
+END	SUMMARY1	end	See you tomorrow. Small reflections compound.		
